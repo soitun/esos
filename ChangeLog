@@ -1,3 +1,9 @@
+2025-12-02  Marc A. Smith  <marc.smith@quantum.com>
+
+	Merge branch 'esos2iso_fix'
+
+	esos2iso.sh: use kpartx to create the partitions for the image loop device (matches Makefile method)
+
 2025-09-06  Marc A. Smith  <marc.smith@quantum.com>
 
 	Merge branch 'valgrind_fix'

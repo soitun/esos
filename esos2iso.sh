@@ -70,19 +70,24 @@ if [ "x${LOOP_DEV}" = "x" ]; then
     echo "Unable to get a loop device!"
     exit 1
 fi
+kpartx -a -s "${LOOP_DEV}" || exit 1
+sleep 1
 echo
 
 # Mount ESOS image and retrieve initramfs, kernel, and root archive
 echo "### Fetching ESOS image components for ISO..."
 MNT_DIR="/tmp/esos2iso_mnt"
 mkdir -p ${MNT_DIR} || exit 1
-mount ${LOOP_DEV}p1 ${MNT_DIR} || exit 1
+mount "$(echo ${LOOP_DEV} | sed 's/^\/dev/\/dev\/mapper/')p1" \
+    ${MNT_DIR} || exit 1
 cp ${MNT_DIR}/*initramfs* ${TEMP_DIR}/isolinux/initrd.img || exit 1
 cp ${MNT_DIR}/*bzImage*prod ${TEMP_DIR}/isolinux/vmlinuz || exit 1
 umount ${MNT_DIR} || exit 1
-mount ${LOOP_DEV}p2 ${MNT_DIR} || exit 1
+mount "$(echo ${LOOP_DEV} | sed 's/^\/dev/\/dev\/mapper/')p2" \
+    ${MNT_DIR} || exit 1
 cp ${MNT_DIR}/*-root.sqsh ${TEMP_DIR}/ || exit 1
 umount ${MNT_DIR} || exit 1
+kpartx -d ${LOOP_DEV} || exit 1
 losetup -d ${LOOP_DEV} || exit 1
 echo
 
